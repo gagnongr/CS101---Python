@@ -6,8 +6,7 @@ if n == (1 or 2 or 3):
     is_prime = True
 
 else:
-    for m in range(2,n):
-        print ((n % m))
+    for m in range(2,(n)):
         if (n % m) == 0:
             is_prime = False
         else:
