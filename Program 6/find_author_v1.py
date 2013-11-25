@@ -1,5 +1,5 @@
 # CS101
-# Program 6
+# Program 5
 # Gregory Gagnon
 # gmg634@mail.umkc.edu
 # 
@@ -67,22 +67,10 @@
 # 14) Output the results.
 #
 # ERROR HANDLING:
-# Error handling for file and dir inputs improved with os.path.isfile and os.path.isdir
+#
 #
 # OTHER COMMENTS: 
-#
-# Program updated per your suggestion via email to make sure not to count empty strings as
-# words with length 0 when splitting on punctuation. I have updated all of the  
-# key functions to reflect this improvement.  
-#
-# I have also removed some dead code - that was what the average_word_length
-# section you asked about was.
-#
-# Program is now correctly predicting 4 out of 5 texts. 
-#
-# Thank you for taking the time to look at my program before grading it - I know
-# that effectively grading assignments twice is time-consuming. I really appreciate it. 
-# 
+
 
 
 import os.path, math
@@ -108,19 +96,19 @@ def average_word_length(text):
     include surrounding punctuation in words. 
     text is a non-empty list of strings each ending in \n.
     At least one line in text contains a word.'''
+    avg_int = 0
     word_count = 0
     char_count = 0
+    line_count = 0
     for line in text:
+        line_count += 1
         word_list = line.strip("\n").split(" ")
-        clean_word_list = [clean_up(word) for word in word_list if clean_up(word) != ""]
-        if clean_word_list != []:
-            word_count += len(clean_word_list)
-            for word in clean_word_list:
-                char_count += len(word)
-    if word_count == 0:
-        return 0
-    print("avg word length, word count:", word_count)
-    return char_count/word_count
+        word_count += len(word_list)
+        clean_word_list = [clean_up(word) for word in word_list]
+        for word in clean_word_list:
+            char_count += len(word)
+    avg_float = char_count/word_count
+    return avg_float
 
 # 3) Define type_token_ratio:
 #    Iterate through text (list of strings) and create a set from the list of words.
@@ -134,13 +122,13 @@ def type_token_ratio(text):
     ttr_set = set()
     for line in text:
         word_list = line.strip("\n").split(" ")
-        clean_word_list = [clean_up(word) for word in word_list if clean_up(word) != ""]
-        if clean_word_list != []:
-            ttr_list.extend(clean_word_list)
-            ttr_set.update(set(clean_word_list))
+        clean_word_list = [clean_up(word) for word in word_list]
+        ttr_list.extend(clean_word_list)
+        ttr_set.update(set(clean_word_list))
     if len(ttr_list) == 0:
         return 0
-    return len(ttr_set) / len(ttr_list)
+    ttr_float = len(ttr_set) / len(ttr_list)
+    return ttr_float
   
 # 4) Define hapax_legomana_ratio:
 #    Iterate through text (list of strings) and create a dictionary from the list of words.
@@ -158,16 +146,15 @@ def hapax_legomana_ratio(text):
     word_count = 0
     for line in text:
         word_list = line.strip("\n").split(" ")
-        clean_word_list = [clean_up(word) for word in word_list if clean_up(word) != ""]
-        if clean_word_list != []:
-            word_count += len(clean_word_list)
-            for word in clean_word_list:
-                hlr_dict[word] = hlr_dict.get(word, 0) + 1
+        word_count += len(word_list)
+        clean_word_list = [clean_up(word) for word in word_list]    
+        for word in clean_word_list:
+            hlr_dict[word] = hlr_dict.get(word, 0) + 1
     rev_hlr_list = [(y,x) for x,y in hlr_dict.items() if y==1]    
     if word_count == 0:
         return 0
-    print("Hapax Legomana Word Count:", word_count)
-    return (len(rev_hlr_list)) / word_count          
+    hlr_float = (len(rev_hlr_list)) / word_count          
+    return hlr_float
 
 # 5) Define split_on_separators:
 #    Create a list of strings.
@@ -177,7 +164,6 @@ def split_on_separators(original, separators):
     ''' Return a list of non-empty, non-blank strings from the original string
     determined by splitting the string on any of the separators.
     separators is a string of single-character separators.'''
-
     sentence_list = []
     text_str = ""
     
@@ -205,20 +191,16 @@ def average_sentence_length(text):
     punctuation surrounded by terminating punctuation
     or beginning or end of file. '''
 
-    word_count = 0
-    sentence_count = 0
     sentence_list = split_on_separators(text, "!?.")
-
+    sentence_count = len(sentence_list)
+    word_count = 0
     for sentence in sentence_list:
-        clean_sentence = sentence.strip("\n")
-        if clean_sentence != []:            
-            sentence_count += 1        
-            sentence_len = len(clean_sentence.split(" "))
-            word_count += sentence_len
+        sentence_len = len(sentence.split(" "))
+        word_count += sentence_len
     if sentence_count == 0:
         return 0
     return word_count/sentence_count
-
+        
     
 # 7) Define average_sentence_complexity:
 #    Iterate through text (string), splitting on terminating punctuation, to create list of strings.
@@ -235,21 +217,10 @@ def avg_sentence_complexity(text):
     Phrases are substrings of a sentences separated by
     one or more of the following delimiters ,;: '''
 
-    sentence_count = 0
-    phrase_count = 0
-
     sentence_list = split_on_separators(text, "!?.")
-    for sentence in sentence_list:
-        clean_sentence = sentence.strip("\n")
-        if clean_sentence != []:
-            sentence_count += 1
-            
+    sentence_count = len(sentence_list)
     phrase_list = split_on_separators(text, "!?.;:,")    
-    for phrase in phrase_list:
-        clean_phrase = phrase.strip("\n")
-        if clean_phrase != []:
-            phrase_count += 1
-            
+    phrase_count = len(phrase_list)
     if sentence_count == 0:
         return 0
     return phrase_count/sentence_count
@@ -264,7 +235,7 @@ def get_valid_filename(prompt):
     loop_bool = True
     while loop_bool:
         filename = input(prompt)
-        if os.path.isfile(filename):
+        if os.path.exists(filename):
             return filename
         else:
             print("That file does not exist.")
@@ -279,7 +250,7 @@ def read_directory_name(prompt):
     loop_bool = True
     while loop_bool:
         dirname = input(prompt)
-        if os.path.isdir(dirname):
+        if os.path.exists(dirname):
             return dirname
         else:
             print("That directory does not exist.")
